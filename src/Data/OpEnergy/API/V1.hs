@@ -29,7 +29,7 @@ type V1API
 
   :<|> "register"
     :> Description "Registers new user and returns randomly generated account secret and account token.\n Account secret should be used for /login API encpoint.\n Account token should be used in the rest API calls as an authentication cookie"
-    :> Post '[JSON] (AccountSecret, AccountToken)
+    :> Post '[JSON] RegisterResult
 
   :<|> "login"
     :> ReqBody '[JSON] AccountSecret
@@ -152,6 +152,19 @@ instance ToSchema SlowFastResult where
   declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
     & mapped.schema.description ?~ "SlowFastResult schema"
     & mapped.schema.example ?~ toJSON defaultSlowFastResult
+
+data RegisterResult = RegisterResult AccountSecret AccountToken
+  deriving (Show, Generic, Typeable)
+
+defaultRegisterResult :: RegisterResult
+defaultRegisterResult = RegisterResult defaultAccountSecret defaultAccountToken
+
+instance ToJSON RegisterResult
+instance FromJSON RegisterResult
+instance ToSchema RegisterResult where
+  declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+    & mapped.schema.description ?~ "RegisterResult schema"
+    & mapped.schema.example ?~ toJSON defaultRegisterResult
 
 
 data TimeStrikeHistory = TimeStrikeHistory
