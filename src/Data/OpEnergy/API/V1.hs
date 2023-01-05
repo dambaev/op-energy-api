@@ -32,9 +32,9 @@ type V1API
     :> Post '[JSON] RegisterResult
 
   :<|> "login"
-    :> ReqBody '[JSON] AccountSecret
+    :> ReqBody '[JSON] [AccountSecret]
     :> Description "Performs login with given account secret. Returns AccountToken value for being used with the rest API calls"
-    :> Post '[JSON] AccountToken
+    :> Post '[JSON] [AccountToken]
 
   :<|> "strike"
     :> "mediantime"
