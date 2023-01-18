@@ -12,7 +12,7 @@ import           Data.Swagger
 import           Servant.API
 import           Servant.Swagger
 
-import           Data.OpEnergy.API.V1
+import           Data.OpEnergy.API.V1 hiding (version)
 
 backendAPI :: Proxy BackendAPI
 backendAPI = Proxy

@@ -91,6 +91,96 @@ type V1API
     :> Description "Calculates NBDR statistics for a given block height and span"
     :> Get '[JSON] Statistics
 
+  :<|> "oe"
+    :> "block"
+    :> Capture "hash" BlockHash
+    :> Description "Returns block's header by a given block hash, including chainwork, that is missing from mempool's blocks' headers cache"
+    :> Get '[JSON] Block
+
+  :<|> "oe"
+    :> "blockspanlist"
+    :> Capture "startBlockHeight" (Natural Int)
+    :> Capture "span" (Positive Int)
+    :> Capture "numberOfSpan" (Positive Int)
+    :> Description "Returns list of spans started from startBlockHeight of size span and numberOfSpan length "
+    :> Get '[JSON] [BlockSpan]
+
+data Block = Block
+  { id:: Text
+  , height:: Int
+  , version:: Int
+  , timestamp:: Int
+  , bits:: Int
+  , nonce:: Int
+  , difficulty:: Double
+  , merkle_root:: Text
+  , tx_count:: Int
+  , size:: Int
+  , weight:: Int
+  , previousblockhash :: BlockHash
+  , chainwork:: Text
+  , mediantime:: Int
+  }
+  deriving (Show, Generic, Typeable)
+
+defaultBlock:: Block
+defaultBlock = Block
+  { id = "0000000000000000000135d442ddb5ad7a8cdf92eb8496265d724804587bdf41"
+  , height = 772473
+  , version = 538304512
+  , timestamp = 1674018057
+  , bits = 386366690
+  , nonce = 2589914493
+  , difficulty = 37590453655497.09
+  , merkle_root = "847457eb7723bbe1e60a73ad6ff3016b630bf3595409eaa6a3f45e3cc1b54cf0"
+  , tx_count = 2303
+  , size = 1528844
+  , weight = 3992705
+  , previousblockhash = BlockHash "00000000000000000004fd7d4e275888070a2c57fbbaa145d576f935f67645f8"
+  , chainwork = "00000000000000000000000000000000000000003dfd08c2b6932fc194a1fee4"
+  , mediantime = 1674012509
+  }
+
+instance ToJSON Block
+instance FromJSON Block
+instance ToSchema Block where
+  declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+    & mapped.schema.description ?~ "Block schema"
+    & mapped.schema.example ?~ toJSON defaultBlock
+
+newtype BlockHash = BlockHash Text
+  deriving (Show, Generic, Typeable)
+
+defaultBlockHash :: BlockHash
+defaultBlockHash = BlockHash "000000000000000000070654ba6de216fc6b5d5c7279e5695b4225d7a6ed993a"
+
+instance ToJSON BlockHash
+instance FromJSON BlockHash
+instance ToSchema BlockHash where
+  declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+    & mapped.schema.description ?~ "BlockHash schema"
+    & mapped.schema.example ?~ toJSON defaultBlockHash
+instance ToParamSchema BlockHash where
+  toParamSchema _ = mempty
+    & type_ ?~ SwaggerString
+
+data BlockSpan = BlockSpan
+  { startBlockHeight :: BlockHeight
+  , endBlockHeight :: BlockHeight
+  }
+  deriving (Show, Generic, Typeable)
+
+defaultBlockSpan :: BlockSpan
+defaultBlockSpan = BlockSpan (BlockHeight 772472) (BlockHeight 772473)
+
+instance ToJSON BlockSpan
+instance FromJSON BlockSpan
+instance ToSchema BlockSpan where
+  declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+    & mapped.schema.description ?~ "BlockSpan schema"
+    & mapped.schema.example ?~ toJSON defaultBlockSpan
+
+
 data NbdrStatistics = NbdrStatistics
   { avg :: Double
   , stddev :: Double
@@ -436,6 +526,11 @@ instance FromJSON (Positive Int) where
   parseJSON = withScientific "Positive" $ \v-> return (verifyPositive v)
 instance ToSchema (Positive Int) where
   declareNamedSchema _ = return $ NamedSchema (Just "Positive") $ mempty
+    & type_ ?~ SwaggerNumber
+    & maximum_ ?~ fromIntegral (maxBound ::Int)
+    & minimum_ ?~ 1
+instance ToParamSchema (Positive Int) where
+  toParamSchema _ = mempty
     & type_ ?~ SwaggerNumber
     & maximum_ ?~ fromIntegral (maxBound ::Int)
     & minimum_ ?~ 1
