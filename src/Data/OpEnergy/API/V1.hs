@@ -153,7 +153,10 @@ instance ToSchema SlowFastResult where
     & mapped.schema.description ?~ "SlowFastResult schema"
     & mapped.schema.example ?~ toJSON defaultSlowFastResult
 
-data RegisterResult = RegisterResult AccountSecret AccountToken
+data RegisterResult = RegisterResult
+  { accountSecret :: AccountSecret
+  , accountToken  :: AccountToken
+  }
   deriving (Show, Generic, Typeable)
 
 defaultRegisterResult :: RegisterResult
