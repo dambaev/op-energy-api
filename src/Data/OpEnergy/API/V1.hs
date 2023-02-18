@@ -86,7 +86,7 @@ type V1API
     :> Post '[JSON] ()
 
   :<|> "statistics"
-    :> Capture "blockheight" Text
+    :> Capture "blockheight" BlockHeight
     :> Capture "span" Text
     :> Description "Calculates NBDR statistics for a given block height and span"
     :> Get '[JSON] Statistics
@@ -98,8 +98,14 @@ type V1API
     :> Get '[JSON] Block
 
   :<|> "oe"
+    :> "blockbyheight"
+    :> Capture "height" BlockHeight
+    :> Description "Returns block's header by a given block height, including chainwork, that is missing from mempool's blocks' headers cache"
+    :> Get '[JSON] Block
+
+  :<|> "oe"
     :> "blockspanlist"
-    :> Capture "startBlockHeight" (Natural Int)
+    :> Capture "startBlockHeight" BlockHeight
     :> Capture "span" (Positive Int)
     :> Capture "numberOfSpan" (Positive Int)
     :> Description "Returns list of spans started from startBlockHeight of size span and numberOfSpan length "
