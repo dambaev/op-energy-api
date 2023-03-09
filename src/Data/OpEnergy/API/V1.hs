@@ -111,6 +111,25 @@ type V1API
     :> Description "Returns list of spans started from startBlockHeight of size span and numberOfSpan length "
     :> Get '[JSON] [BlockSpan]
 
+  :<|> "oe"
+    :> "git-hash"
+    :> Description "returns short hash of commit of the op-energy git repo that had been used to build backend"
+    :> Get '[JSON] GitHashResponse
+
+
+data GitHashResponse = GitHashResponse
+  { gitHashHash :: Text
+  }
+  deriving (Show, Generic, Typeable)
+instance ToJSON GitHashResponse
+instance FromJSON GitHashResponse
+instance ToSchema GitHashResponse where
+  declareNamedSchema proxy = genericDeclareNamedSchema defaultSchemaOptions proxy
+    & mapped.schema.description ?~ "GitHashResponse schema"
+    & mapped.schema.example ?~ toJSON defaultGitHashResponse
+defaultGitHashResponse :: GitHashResponse
+defaultGitHashResponse = GitHashResponse "12345678"
+
 data Block = Block
   { id:: Text
   , height:: Int
