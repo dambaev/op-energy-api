@@ -118,7 +118,7 @@ type V1API
 
 
 data GitHashResponse = GitHashResponse
-  { gitHashHash :: Text
+  { gitCommitHash :: Text
   }
   deriving (Show, Generic, Typeable)
 instance ToJSON GitHashResponse
@@ -128,7 +128,9 @@ instance ToSchema GitHashResponse where
     & mapped.schema.description ?~ "GitHashResponse schema"
     & mapped.schema.example ?~ toJSON defaultGitHashResponse
 defaultGitHashResponse :: GitHashResponse
-defaultGitHashResponse = GitHashResponse "12345678"
+defaultGitHashResponse = GitHashResponse
+  { gitCommitHash = "12345678"
+  }
 
 data Block = Block
   { id:: Text
