@@ -100,7 +100,7 @@ type V1API
   :<|> "oe"
     :> "blockbyheight"
     :> Capture "height" BlockHeight
-    :> Description "Returns block's header by a given block height, including chainwork, that is missing from mempool's blocks' headers cache"
+    :> Description "Returns block's header by a given block height"
     :> Get '[JSON] Block
 
   :<|> "oe"
